@@ -1,0 +1,299 @@
+{
+    "apiVersion": "v1",
+    "kind": "Pod",
+    "metadata": {
+        "creationTimestamp": "2025-03-05T14:51:31Z",
+        "generateName": "nginx-cdn-ffb5fd57-",
+        "labels": {
+            "app": "nginx-cdn",
+            "pod-template-hash": "ffb5fd57"
+        },
+        "name": "nginx-cdn-ffb5fd57-w5hkt",
+        "namespace": "user6cw36dht64w32dg",
+        "ownerReferences": [
+            {
+                "apiVersion": "apps/v1",
+                "blockOwnerDeletion": true,
+                "controller": true,
+                "kind": "ReplicaSet",
+                "name": "nginx-cdn-ffb5fd57",
+                "uid": "2a0acc4c-92d3-48d5-9b4f-3c79d669e0b9"
+            }
+        ],
+        "resourceVersion": "103827848",
+        "uid": "569dd38f-6fff-4eb1-bac5-d88e4c559369"
+    },
+    "spec": {
+        "containers": [
+            {
+                "command": [
+                    "nginx",
+                    "-g",
+                    "daemon off;"
+                ],
+                "image": "cr.yandex/crpcqt038mmskd2ime3g/nginx_cdn:latest",
+                "imagePullPolicy": "IfNotPresent",
+                "livenessProbe": {
+                    "exec": {
+                        "command": [
+                            "wget",
+                            "--spider",
+                            "--quiet",
+                            "http://localhost:80/"
+                        ]
+                    },
+                    "failureThreshold": 5,
+                    "initialDelaySeconds": 1,
+                    "periodSeconds": 15,
+                    "successThreshold": 1,
+                    "timeoutSeconds": 5
+                },
+                "name": "details",
+                "ports": [
+                    {
+                        "containerPort": 80,
+                        "name": "http",
+                        "protocol": "TCP"
+                    }
+                ],
+                "readinessProbe": {
+                    "exec": {
+                        "command": [
+                            "wget",
+                            "--spider",
+                            "--quiet",
+                            "http://localhost:80/.done"
+                        ]
+                    },
+                    "failureThreshold": 5,
+                    "initialDelaySeconds": 10,
+                    "periodSeconds": 10,
+                    "successThreshold": 1,
+                    "timeoutSeconds": 5
+                },
+                "resources": {
+                    "limits": {
+                        "cpu": "500m",
+                        "memory": "512Mi"
+                    },
+                    "requests": {
+                        "cpu": "500m",
+                        "memory": "512Mi"
+                    }
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "volumeMounts": [
+                    {
+                        "mountPath": "/var/www/html/",
+                        "name": "shared-data"
+                    },
+                    {
+                        "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                        "name": "kube-api-access-ldvrg",
+                        "readOnly": true
+                    }
+                ]
+            }
+        ],
+        "dnsPolicy": "ClusterFirst",
+        "enableServiceLinks": true,
+        "initContainers": [
+            {
+                "command": [
+                    "sh",
+                    "-c",
+                    "./download.sh"
+                ],
+                "env": [
+                    {
+                        "name": "URL",
+                        "value": "https://code.s3.yandex.net/Kubernetes/barsik.jpg"
+                    }
+                ],
+                "image": "cr.yandex/crpcqt038mmskd2ime3g/nginx_cdn:latest",
+                "imagePullPolicy": "Always",
+                "name": "init-container-nginx-cdn",
+                "resources": {
+                    "limits": {
+                        "cpu": "320m",
+                        "memory": "100Mi"
+                    },
+                    "requests": {
+                        "cpu": "120m",
+                        "memory": "20Mi"
+                    }
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "volumeMounts": [
+                    {
+                        "mountPath": "/var/www/html/",
+                        "name": "shared-data"
+                    },
+                    {
+                        "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                        "name": "kube-api-access-ldvrg",
+                        "readOnly": true
+                    }
+                ]
+            }
+        ],
+        "nodeName": "cl1jepu1h9j5n3g00iug-ohoc",
+        "preemptionPolicy": "PreemptLowerPriority",
+        "priority": 0,
+        "restartPolicy": "Always",
+        "schedulerName": "default-scheduler",
+        "securityContext": {},
+        "serviceAccount": "default",
+        "serviceAccountName": "default",
+        "terminationGracePeriodSeconds": 30,
+        "tolerations": [
+            {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/not-ready",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+            },
+            {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/unreachable",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+            }
+        ],
+        "volumes": [
+            {
+                "emptyDir": {
+                    "sizeLimit": "100Mi"
+                },
+                "name": "shared-data"
+            },
+            {
+                "name": "kube-api-access-ldvrg",
+                "projected": {
+                    "defaultMode": 420,
+                    "sources": [
+                        {
+                            "serviceAccountToken": {
+                                "expirationSeconds": 3607,
+                                "path": "token"
+                            }
+                        },
+                        {
+                            "configMap": {
+                                "items": [
+                                    {
+                                        "key": "ca.crt",
+                                        "path": "ca.crt"
+                                    }
+                                ],
+                                "name": "kube-root-ca.crt"
+                            }
+                        },
+                        {
+                            "downwardAPI": {
+                                "items": [
+                                    {
+                                        "fieldRef": {
+                                            "apiVersion": "v1",
+                                            "fieldPath": "metadata.namespace"
+                                        },
+                                        "path": "namespace"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "status": {
+        "conditions": [
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2025-03-05T14:51:33Z",
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+            },
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2025-03-05T14:51:33Z",
+                "status": "True",
+                "type": "Initialized"
+            },
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2025-03-05T14:51:52Z",
+                "status": "True",
+                "type": "Ready"
+            },
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2025-03-05T14:51:52Z",
+                "status": "True",
+                "type": "ContainersReady"
+            },
+            {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2025-03-05T14:51:31Z",
+                "status": "True",
+                "type": "PodScheduled"
+            }
+        ],
+        "containerStatuses": [
+            {
+                "containerID": "containerd://021f5ba352eb261dedfaf6b56df2dede82537a33c5849fed801a790f1b0cfeb2",
+                "image": "cr.yandex/crpcqt038mmskd2ime3g/nginx_cdn:latest",
+                "imageID": "cr.yandex/crpcqt038mmskd2ime3g/nginx_cdn@sha256:689448a093acba97d4cdf8294acc14cc48af77a0a951972339787700023819b7",
+                "lastState": {},
+                "name": "details",
+                "ready": true,
+                "restartCount": 0,
+                "started": true,
+                "state": {
+                    "running": {
+                        "startedAt": "2025-03-05T14:51:33Z"
+                    }
+                }
+            }
+        ],
+        "hostIP": "10.129.0.18",
+        "hostIPs": [
+            {
+                "ip": "10.129.0.18"
+            }
+        ],
+        "initContainerStatuses": [
+            {
+                "containerID": "containerd://2ecb1c663fb83b3c198162757dac9d35d13fc03a044246832ce63acb3a96a72d",
+                "image": "cr.yandex/crpcqt038mmskd2ime3g/nginx_cdn:latest",
+                "imageID": "cr.yandex/crpcqt038mmskd2ime3g/nginx_cdn@sha256:689448a093acba97d4cdf8294acc14cc48af77a0a951972339787700023819b7",
+                "lastState": {},
+                "name": "init-container-nginx-cdn",
+                "ready": true,
+                "restartCount": 0,
+                "started": false,
+                "state": {
+                    "terminated": {
+                        "containerID": "containerd://2ecb1c663fb83b3c198162757dac9d35d13fc03a044246832ce63acb3a96a72d",
+                        "exitCode": 0,
+                        "finishedAt": "2025-03-05T14:51:32Z",
+                        "reason": "Completed",
+                        "startedAt": "2025-03-05T14:51:32Z"
+                    }
+                }
+            }
+        ],
+        "phase": "Running",
+        "podIP": "10.112.218.19",
+        "podIPs": [
+            {
+                "ip": "10.112.218.19"
+            }
+        ],
+        "qosClass": "Burstable",
+        "startTime": "2025-03-05T14:51:31Z"
+    }
+}

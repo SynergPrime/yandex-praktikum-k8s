@@ -1,0 +1,6 @@
+apiVersion: v2
+name: podinfo-redis
+description: Redis chart for podinfo
+type: application
+version: 7.0.7
+appVersion: "1.16.0"

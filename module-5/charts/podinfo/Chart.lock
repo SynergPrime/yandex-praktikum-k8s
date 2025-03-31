@@ -1,0 +1,6 @@
+dependencies:
+- name: podinfo-redis
+  repository: file:///home/vlkovalev/charts/redis
+  version: 7.0.7
+digest: sha256:1f3e25ba1af00de3e0ef37333c4ecb4a1f767dce164fc205642640534ee074ec
+generated: "2025-03-16T00:29:50.970536995+03:00"

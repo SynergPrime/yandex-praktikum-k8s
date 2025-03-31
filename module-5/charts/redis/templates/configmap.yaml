@@ -1,0 +1,9 @@
+{{- if .Values.useConfigMap }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.servicename }}
+data:
+  redis.conf: 
+   {{- toYaml .Values.configmap.redisconf | indent 1 }}
+{{- end }}
